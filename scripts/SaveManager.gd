@@ -33,3 +33,8 @@ func load_game() -> Dictionary:
 ## Returns true if a save file exists on disk.
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
+
+## Deletes the save file from disk. Used when starting a new game.
+func delete_save() -> void:
+	if FileAccess.file_exists(SAVE_PATH):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
