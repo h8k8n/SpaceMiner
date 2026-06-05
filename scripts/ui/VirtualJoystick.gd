@@ -1,6 +1,6 @@
 extends Control
 
-## Emitted each frame while the joystick is active, with a normalised direction.
+## Emitted on drag events with a normalised direction, and with Vector2.ZERO on release.
 signal moved(direction: Vector2)
 ## Emitted when the finger lifts off the joystick.
 signal released()
@@ -41,11 +41,12 @@ func _on_touch(event: InputEventScreenTouch) -> void:
 func _on_drag(event: InputEventScreenDrag) -> void:
 	if event.index != _touch_index:
 		return
+	var safe_radius := maxf(radius, 1.0)
 	var offset := to_local(event.position) - to_local(_center)
-	if offset.length() > radius:
-		offset = offset.normalized() * radius
+	if offset.length() > safe_radius:
+		offset = offset.normalized() * safe_radius
 	_stick.position = _base.size / 2.0 - _stick.size / 2.0 + offset
 	if offset.length() > dead_zone:
-		moved.emit(offset / radius)
+		moved.emit(offset / safe_radius)
 	else:
 		moved.emit(Vector2.ZERO)

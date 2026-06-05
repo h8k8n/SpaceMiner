@@ -25,7 +25,7 @@ func _physics_process(delta: float) -> void:
 	velocity *= damping
 	velocity = velocity.limit_length(max_speed)
 
-	move_and_collide(velocity * delta)
+	move_and_slide()
 
 ## Returns the active input direction, preferring joystick over keyboard.
 func _get_input() -> Vector2:
