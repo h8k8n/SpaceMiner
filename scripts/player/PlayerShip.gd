@@ -16,6 +16,11 @@ extends CharacterBody2D
 @export var max_fuel: float = 100.0
 ## Fuel drained per second while thrusting.
 @export var fuel_drain_rate: float = 10.0
+## Maximum health points.
+@export var max_health: float = 100.0
+
+## Seconds of invincibility granted after taking damage.
+const INVINCIBILITY_DURATION: float = 1.5
 
 ## Emitted when the ship fires; carries the muzzle position, shot direction, and damage.
 signal fired(position: Vector2, direction: Vector2, damage: int)
@@ -23,13 +28,20 @@ signal fired(position: Vector2, direction: Vector2, damage: int)
 signal cargo_changed(current: int, maximum: int)
 ## Emitted when fuel changes; carries current fuel and maximum fuel.
 signal fuel_changed(current: float, maximum: float)
+## Emitted when health changes; carries current health and maximum health.
+signal health_changed(current: float, maximum: float)
+## Emitted when health reaches zero.
+signal died()
 
 var _joystick_input: Vector2 = Vector2.ZERO
 var _fire_timer: float = 0.0
+var _invincibility_timer: float = 0.0
 ## Current cargo amount.
 var cargo: int = 0
 ## Current fuel level.
 var fuel: float = 100.0
+## Current health level.
+var health: float = 100.0
 ## Damage dealt by each laser shot; increased by laser upgrades.
 var laser_damage: int = 1
 ## Current upgrade level for each stat (0 = base, max 3).
@@ -40,10 +52,14 @@ var _base_max_speed: float
 var _base_max_cargo: int
 var _base_max_fuel: float
 
+@onready var _hitbox: Area2D = $Hitbox
+
 func _ready() -> void:
 	_base_max_speed = max_speed
 	_base_max_cargo = max_cargo
 	_base_max_fuel = max_fuel
+	health = max_health
+	_hitbox.area_entered.connect(_on_hitbox_area_entered)
 
 func _physics_process(delta: float) -> void:
 	var input_dir := _get_input()
@@ -68,6 +84,8 @@ func _physics_process(delta: float) -> void:
 
 	if _fire_timer > 0.0:
 		_fire_timer = max(0.0, _fire_timer - delta)
+	if _invincibility_timer > 0.0:
+		_invincibility_timer = max(0.0, _invincibility_timer - delta)
 	if Input.is_action_just_pressed("mine"):
 		fire()
 
@@ -141,3 +159,25 @@ func apply_save_data(data: Dictionary) -> void:
 	max_fuel = _base_max_fuel + upgrade_levels.get("fuel", 0) * 25.0
 	laser_damage = 1 + upgrade_levels.get("laser", 0)
 	cargo = mini(data.get("cargo", 0), max_cargo)
+
+## Deals damage to the ship. Ignored during invincibility frames.
+func take_damage(amount: float) -> void:
+	if _invincibility_timer > 0.0:
+		return
+	health = max(0.0, health - amount)
+	_invincibility_timer = INVINCIBILITY_DURATION
+	health_changed.emit(health, max_health)
+	if health <= 0.0:
+		died.emit()
+
+## Heals the ship by the given amount (capped at max_health).
+func heal(amount: float) -> void:
+	health = min(health + amount, max_health)
+	health_changed.emit(health, max_health)
+
+## Called when an area enters the player's hitbox.
+func _on_hitbox_area_entered(area: Area2D) -> void:
+	# Asteroids have the "asteroid_size" property; damage scales with size.
+	if "asteroid_size" in area:
+		var damage_map: Dictionary = {0: 40.0, 1: 25.0, 2: 15.0}
+		take_damage(damage_map.get(area.asteroid_size, 15.0))
