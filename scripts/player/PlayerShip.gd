@@ -8,8 +8,14 @@ extends CharacterBody2D
 @export var rotation_speed: float = 3.0
 ## Velocity damping factor applied each frame (simulates space drag).
 @export var damping: float = 0.98
+## Minimum seconds between consecutive shots.
+@export var fire_cooldown: float = 0.25
+
+## Emitted when the ship fires; carries the muzzle position and shot direction.
+signal fired(position: Vector2, direction: Vector2)
 
 var _joystick_input: Vector2 = Vector2.ZERO
+var _fire_timer: float = 0.0
 
 func _physics_process(delta: float) -> void:
 	var input_dir := _get_input()
@@ -27,6 +33,11 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+	if _fire_timer > 0.0:
+		_fire_timer -= delta
+	if Input.is_action_just_pressed("mine"):
+		fire()
+
 ## Returns the active input direction, preferring joystick over keyboard.
 func _get_input() -> Vector2:
 	if _joystick_input.length() > 0.1:
@@ -39,3 +50,11 @@ func _get_input() -> Vector2:
 ## Receives direction from VirtualJoystick; call with Vector2.ZERO to stop.
 func set_joystick_input(direction: Vector2) -> void:
 	_joystick_input = direction
+
+## Fires a bullet in the ship's current facing direction.
+func fire() -> void:
+	if _fire_timer > 0.0:
+		return
+	_fire_timer = fire_cooldown
+	var direction := Vector2.UP.rotated(rotation)
+	fired.emit(global_position + direction * 35.0, direction)
