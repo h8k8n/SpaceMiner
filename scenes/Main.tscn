@@ -1,27 +1,28 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://7tu6gsfxoq35"]
 
 [ext_resource type="PackedScene" path="res://scenes/base/Base.tscn" id="1_base"]
 [ext_resource type="PackedScene" path="res://scenes/player/PlayerShip.tscn" id="2_playership"]
 [ext_resource type="PackedScene" path="res://scenes/ui/VirtualJoystick.tscn" id="3_joystick"]
-[ext_resource type="Script" path="res://scripts/Main.gd" id="4_main_script"]
+[ext_resource type="Script" uid="uid://dqd3tj70ke63w" path="res://scripts/Main.gd" id="4_main_script"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=735296864]
 script = ExtResource("4_main_script")
 
-[node name="Base" parent="." instance=ExtResource("1_base")]
+[node name="Base" parent="." unique_id=1918482882 instance=ExtResource("1_base")]
 
-[node name="PlayerShip" parent="." instance=ExtResource("2_playership")]
+[node name="PlayerShip" parent="." unique_id=354298060 instance=ExtResource("2_playership")]
 position = Vector2(360, 640)
 
-[node name="SpawnTimer" type="Timer" parent="."]
+[node name="SpawnTimer" type="Timer" parent="." unique_id=1707224891]
 wait_time = 3.0
 autostart = true
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1134896554]
 
-[node name="VirtualJoystick" parent="HUD" instance=ExtResource("3_joystick")]
+[node name="VirtualJoystick" parent="HUD" unique_id=1226272179 instance=ExtResource("3_joystick")]
 
-[node name="FireButton" type="Button" parent="HUD"]
+[node name="FireButton" type="Button" parent="HUD" unique_id=1376986410]
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -32,11 +33,10 @@ offset_right = -20.0
 offset_bottom = -20.0
 text = "FIRE"
 
-[node name="CargoLabel" type="Label" parent="HUD"]
+[node name="CargoLabel" type="Label" parent="HUD" unique_id=2011164500]
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.0
 offset_left = -160.0
 offset_top = 10.0
 offset_right = -10.0

@@ -29,7 +29,7 @@ func _on_touch(event: InputEventScreenTouch) -> void:
 	if event.pressed and _touch_index == -1:
 		_touch_index = event.index
 		_center = event.position
-		_base.position = to_local(_center) - _base.size / 2.0
+		_base.global_position = _center - _base.size / 2.0
 		_base.visible = true
 		_stick.position = _base.size / 2.0 - _stick.size / 2.0
 	elif not event.pressed and event.index == _touch_index:
@@ -42,7 +42,7 @@ func _on_drag(event: InputEventScreenDrag) -> void:
 	if event.index != _touch_index:
 		return
 	var safe_radius := maxf(radius, 1.0)
-	var offset := to_local(event.position) - to_local(_center)
+	var offset: Vector2 = event.position - _center
 	if offset.length() > safe_radius:
 		offset = offset.normalized() * safe_radius
 	_stick.position = _base.size / 2.0 - _stick.size / 2.0 + offset
