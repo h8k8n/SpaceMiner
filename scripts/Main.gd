@@ -2,6 +2,7 @@ extends Node2D
 
 const BulletScene: PackedScene = preload("res://scenes/bullet/Bullet.tscn")
 const AsteroidScene: PackedScene = preload("res://scenes/asteroid/Asteroid.tscn")
+const PickupScene: PackedScene = preload("res://scenes/pickup/Pickup.tscn")
 
 ## Maximum number of active asteroids (fragments count toward the total).
 const MAX_ASTEROIDS: int = 8
@@ -12,6 +13,7 @@ const INITIAL_ASTEROIDS: int = 3
 @onready var _joystick: Control = $HUD/VirtualJoystick
 @onready var _fire_button: Button = $HUD/FireButton
 @onready var _spawn_timer: Timer = $SpawnTimer
+@onready var _cargo_label: Label = $HUD/CargoLabel
 
 var _asteroid_count: int = 0
 
@@ -19,8 +21,10 @@ func _ready() -> void:
 	randomize()
 	_joystick.moved.connect(_player.set_joystick_input)
 	_player.fired.connect(_on_player_fired)
+	_player.cargo_changed.connect(_on_cargo_changed)
 	_fire_button.pressed.connect(_player.fire)
 	_spawn_timer.timeout.connect(_on_spawn_timer_timeout)
+	_cargo_label.text = "Cargo: 0/%d" % _player.max_cargo
 	for i in range(INITIAL_ASTEROIDS):
 		_spawn_asteroid(0)
 
@@ -63,7 +67,16 @@ func _on_asteroid_destroyed(pos: Vector2, size: int) -> void:
 	elif size == 1:  # MEDIUM splits into two SMALL
 		_spawn_fragment(pos, 2)
 		_spawn_fragment(pos, 2)
-	# SMALL: no further fragments
+	else:  # SMALL: no further fragments, drops a pickup
+		_spawn_pickup(pos)
+
+func _spawn_pickup(pos: Vector2) -> void:
+	var pickup := PickupScene.instantiate()
+	add_child(pickup)
+	pickup.global_position = pos
+
+func _on_cargo_changed(current: int, maximum: int) -> void:
+	_cargo_label.text = "Cargo: %d/%d" % [current, maximum]
 
 func _random_edge_position() -> Vector2:
 	var vp := get_viewport_rect().size
