@@ -10,12 +10,18 @@ extends CharacterBody2D
 @export var damping: float = 0.98
 ## Minimum seconds between consecutive shots.
 @export var fire_cooldown: float = 0.25
+## Maximum number of resource units the cargo hold can store.
+@export var max_cargo: int = 10
 
 ## Emitted when the ship fires; carries the muzzle position and shot direction.
 signal fired(position: Vector2, direction: Vector2)
+## Emitted when cargo changes; carries current amount and maximum capacity.
+signal cargo_changed(current: int, maximum: int)
 
 var _joystick_input: Vector2 = Vector2.ZERO
 var _fire_timer: float = 0.0
+## Current cargo amount.
+var cargo: int = 0
 
 func _physics_process(delta: float) -> void:
 	var input_dir := _get_input()
@@ -58,3 +64,11 @@ func fire() -> void:
 	_fire_timer = fire_cooldown
 	var direction := Vector2.UP.rotated(rotation)
 	fired.emit(global_position + direction * 35.0, direction)
+
+## Tries to add amount to cargo. Returns true if collected, false if cargo is full.
+func try_collect(amount: int) -> bool:
+	if cargo >= max_cargo:
+		return false
+	cargo = min(cargo + amount, max_cargo)
+	cargo_changed.emit(cargo, max_cargo)
+	return true
