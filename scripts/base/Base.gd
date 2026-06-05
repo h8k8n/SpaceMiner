@@ -3,7 +3,8 @@ extends Node2D
 func _ready() -> void:
 	$Area2D.body_entered.connect(_on_body_entered)
 
-## Refuels any ship that enters the base docking zone.
+## Refuels any ship that enters the base docking zone and saves the game.
 func _on_body_entered(body: Node2D) -> void:
 	if body.has_method("refuel"):
 		body.refuel()
+		SaveManager.save_game(body)

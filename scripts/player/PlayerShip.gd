@@ -35,6 +35,16 @@ var laser_damage: int = 1
 ## Current upgrade level for each stat (0 = base, max 3).
 var upgrade_levels: Dictionary = {"speed": 0, "cargo": 0, "fuel": 0, "laser": 0}
 
+# Base (un-upgraded) stat values stored at startup for save/load reconstruction.
+var _base_max_speed: float
+var _base_max_cargo: int
+var _base_max_fuel: float
+
+func _ready() -> void:
+	_base_max_speed = max_speed
+	_base_max_cargo = max_cargo
+	_base_max_fuel = max_fuel
+
 func _physics_process(delta: float) -> void:
 	var input_dir := _get_input()
 
@@ -121,3 +131,13 @@ func apply_upgrade(upgrade_id: String) -> void:
 			fuel_changed.emit(fuel, max_fuel)
 		"laser":
 			laser_damage += 1
+
+## Restores player state from a save data dictionary produced by SaveManager.
+func apply_save_data(data: Dictionary) -> void:
+	upgrade_levels = data.get("upgrade_levels", {"speed": 0, "cargo": 0, "fuel": 0, "laser": 0}).duplicate()
+	# Rebuild derived stats from the original base export values and upgrade levels.
+	max_speed = _base_max_speed + upgrade_levels.get("speed", 0) * 80.0
+	max_cargo = _base_max_cargo + upgrade_levels.get("cargo", 0) * 5
+	max_fuel = _base_max_fuel + upgrade_levels.get("fuel", 0) * 25.0
+	laser_damage = 1 + upgrade_levels.get("laser", 0)
+	cargo = mini(data.get("cargo", 0), max_cargo)

@@ -23,6 +23,10 @@ var _asteroid_count: int = 0
 
 func _ready() -> void:
 	randomize()
+	# Apply persisted save data before wiring up UI signals so labels initialise correctly.
+	var save_data: Dictionary = SaveManager.load_game()
+	if not save_data.is_empty():
+		_player.apply_save_data(save_data)
 	_joystick.moved.connect(_player.set_joystick_input)
 	_player.fired.connect(_on_player_fired)
 	_player.cargo_changed.connect(_on_cargo_changed)
@@ -30,7 +34,7 @@ func _ready() -> void:
 	_fire_button.pressed.connect(_player.fire)
 	_upgrade_button.pressed.connect(_on_upgrade_button_pressed)
 	_spawn_timer.timeout.connect(_on_spawn_timer_timeout)
-	_cargo_label.text = "Cargo: 0/%d" % _player.max_cargo
+	_cargo_label.text = "Cargo: %d/%d" % [_player.cargo, _player.max_cargo]
 	_fuel_bar.max_value = _player.max_fuel
 	_fuel_bar.value = _player.fuel
 	for i in range(INITIAL_ASTEROIDS):

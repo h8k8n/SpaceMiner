@@ -59,3 +59,11 @@ layout_mode = 2
 [node name="UpgradesContainer" type="VBoxContainer" parent="CenterContainer/Panel/MarginContainer/VBox"]
 layout_mode = 2
 unique_name_in_owner = true
+
+[node name="HSeparator2" type="HSeparator" parent="CenterContainer/Panel/MarginContainer/VBox"]
+layout_mode = 2
+
+[node name="SaveButton" type="Button" parent="CenterContainer/Panel/MarginContainer/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+text = "Save Game"

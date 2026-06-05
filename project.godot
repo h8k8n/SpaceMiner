@@ -55,6 +55,10 @@ mine={
 ]
 }
 
+[autoload]
+
+SaveManager="*res://scripts/SaveManager.gd"
+
 [rendering]
 
 renderer/rendering_method="mobile"
