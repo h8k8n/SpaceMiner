@@ -1,0 +1,38 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/VirtualJoystick.gd" id="1_joystick_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_base"]
+bg_color = Color(1, 1, 1, 0.15)
+corner_radius_top_left = 75
+corner_radius_top_right = 75
+corner_radius_bottom_left = 75
+corner_radius_bottom_right = 75
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stick"]
+bg_color = Color(0.8, 0.8, 1, 0.5)
+corner_radius_top_left = 35
+corner_radius_top_right = 35
+corner_radius_bottom_left = 35
+corner_radius_bottom_right = 35
+
+[node name="VirtualJoystick" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_joystick_script")
+
+[node name="Base" type="Panel" parent="."]
+custom_minimum_size = Vector2(150, 150)
+size = Vector2(150, 150)
+theme_override_styles/panel = SubResource("StyleBoxFlat_base")
+
+[node name="Stick" type="Panel" parent="Base"]
+custom_minimum_size = Vector2(70, 70)
+size = Vector2(70, 70)
+position = Vector2(40, 40)
+theme_override_styles/panel = SubResource("StyleBoxFlat_stick")

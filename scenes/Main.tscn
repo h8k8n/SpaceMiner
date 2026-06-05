@@ -1,7 +1,18 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/base/Base.tscn" id="1_base"]
+[ext_resource type="PackedScene" path="res://scenes/player/PlayerShip.tscn" id="2_playership"]
+[ext_resource type="PackedScene" path="res://scenes/ui/VirtualJoystick.tscn" id="3_joystick"]
+[ext_resource type="Script" path="res://scripts/Main.gd" id="4_main_script"]
 
 [node name="Main" type="Node2D"]
+script = ExtResource("4_main_script")
 
 [node name="Base" parent="." instance=ExtResource("1_base")]
+
+[node name="PlayerShip" parent="." instance=ExtResource("2_playership")]
+position = Vector2(360, 640)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="VirtualJoystick" parent="HUD" instance=ExtResource("3_joystick")]
