@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/player/PlayerShip.tscn" id="2_playership"]
 [ext_resource type="PackedScene" path="res://scenes/ui/VirtualJoystick.tscn" id="3_joystick"]
 [ext_resource type="Script" uid="uid://dqd3tj70ke63w" path="res://scripts/Main.gd" id="4_main_script"]
+[ext_resource type="PackedScene" path="res://scenes/ui/UpgradeMenu.tscn" id="5_upgrade_menu"]
 
 [node name="Main" type="Node2D" unique_id=735296864]
 script = ExtResource("4_main_script")
@@ -34,6 +35,13 @@ offset_right = -20.0
 offset_bottom = -20.0
 text = "FIRE"
 
+[node name="UpgradeButton" type="Button" parent="HUD"]
+offset_left = 10.0
+offset_top = 40.0
+offset_right = 130.0
+offset_bottom = 65.0
+text = "UPGRADES"
+
 [node name="CargoLabel" type="Label" parent="HUD" unique_id=2011164500]
 anchors_preset = 1
 anchor_left = 1.0
@@ -54,3 +62,5 @@ min_value = 0.0
 max_value = 100.0
 value = 100.0
 show_percentage = false
+
+[node name="UpgradeMenu" parent="HUD" instance=ExtResource("5_upgrade_menu")]

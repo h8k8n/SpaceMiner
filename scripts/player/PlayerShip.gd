@@ -17,8 +17,8 @@ extends CharacterBody2D
 ## Fuel drained per second while thrusting.
 @export var fuel_drain_rate: float = 10.0
 
-## Emitted when the ship fires; carries the muzzle position and shot direction.
-signal fired(position: Vector2, direction: Vector2)
+## Emitted when the ship fires; carries the muzzle position, shot direction, and damage.
+signal fired(position: Vector2, direction: Vector2, damage: int)
 ## Emitted when cargo changes; carries current amount and maximum capacity.
 signal cargo_changed(current: int, maximum: int)
 ## Emitted when fuel changes; carries current fuel and maximum fuel.
@@ -30,6 +30,10 @@ var _fire_timer: float = 0.0
 var cargo: int = 0
 ## Current fuel level.
 var fuel: float = 100.0
+## Damage dealt by each laser shot; increased by laser upgrades.
+var laser_damage: int = 1
+## Current upgrade level for each stat (0 = base, max 3).
+var upgrade_levels: Dictionary = {"speed": 0, "cargo": 0, "fuel": 0, "laser": 0}
 
 func _physics_process(delta: float) -> void:
 	var input_dir := _get_input()
@@ -76,7 +80,7 @@ func fire() -> void:
 		return
 	_fire_timer = fire_cooldown
 	var direction := Vector2.UP.rotated(rotation)
-	fired.emit(global_position + direction * 35.0, direction)
+	fired.emit(global_position + direction * 35.0, direction, laser_damage)
 
 ## Tries to add amount to cargo. Returns true if collected, false if cargo is full.
 func try_collect(amount: int) -> bool:
@@ -93,3 +97,27 @@ func refuel(amount: float = -1.0) -> void:
 	else:
 		fuel = min(fuel + amount, max_fuel)
 	fuel_changed.emit(fuel, max_fuel)
+
+## Spends the given amount of cargo as upgrade currency.
+## Returns true if successful, false if not enough cargo.
+func spend_cargo(amount: int) -> bool:
+	if cargo < amount:
+		return false
+	cargo -= amount
+	cargo_changed.emit(cargo, max_cargo)
+	return true
+
+## Applies the next level of the specified upgrade.
+func apply_upgrade(upgrade_id: String) -> void:
+	upgrade_levels[upgrade_id] += 1
+	match upgrade_id:
+		"speed":
+			max_speed += 80.0
+		"cargo":
+			max_cargo += 5
+			cargo_changed.emit(cargo, max_cargo)
+		"fuel":
+			max_fuel += 25.0
+			fuel_changed.emit(fuel, max_fuel)
+		"laser":
+			laser_damage += 1

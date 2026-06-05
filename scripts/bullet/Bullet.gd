@@ -7,15 +7,18 @@ extends Area2D
 
 var _direction: Vector2 = Vector2.ZERO
 var _time_alive: float = 0.0
+## Damage dealt to the first target hit; set via init().
+var damage: int = 1
 
 func _ready() -> void:
 	area_entered.connect(_on_area_entered)
 
-## Initialises the bullet's start position and travel direction.
-func init(start_position: Vector2, direction: Vector2) -> void:
+## Initialises the bullet's start position, travel direction, and damage.
+func init(start_position: Vector2, direction: Vector2, bullet_damage: int = 1) -> void:
 	global_position = start_position
 	_direction = direction.normalized()
 	rotation = _direction.angle() + PI / 2.0
+	damage = bullet_damage
 
 func _process(delta: float) -> void:
 	global_position += _direction * speed * delta
@@ -25,5 +28,5 @@ func _process(delta: float) -> void:
 
 func _on_area_entered(area: Area2D) -> void:
 	if area.has_method("take_damage"):
-		area.take_damage(1)
+		area.take_damage(damage)
 	queue_free()
