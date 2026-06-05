@@ -13,6 +13,8 @@ const INITIAL_ASTEROIDS: int = 3
 @onready var _player := $PlayerShip
 @onready var _joystick: Control = $HUD/VirtualJoystick
 @onready var _fire_button: Button = $HUD/FireButton
+@onready var _upgrade_button: Button = $HUD/UpgradeButton
+@onready var _upgrade_menu: Control = $HUD/UpgradeMenu
 @onready var _spawn_timer: Timer = $SpawnTimer
 @onready var _cargo_label: Label = $HUD/CargoLabel
 @onready var _fuel_bar: ProgressBar = $HUD/FuelBar
@@ -26,6 +28,7 @@ func _ready() -> void:
 	_player.cargo_changed.connect(_on_cargo_changed)
 	_player.fuel_changed.connect(_on_fuel_changed)
 	_fire_button.pressed.connect(_player.fire)
+	_upgrade_button.pressed.connect(_on_upgrade_button_pressed)
 	_spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 	_cargo_label.text = "Cargo: 0/%d" % _player.max_cargo
 	_fuel_bar.max_value = _player.max_fuel
@@ -33,10 +36,14 @@ func _ready() -> void:
 	for i in range(INITIAL_ASTEROIDS):
 		_spawn_asteroid(0)
 
-func _on_player_fired(pos: Vector2, dir: Vector2) -> void:
+func _on_player_fired(pos: Vector2, dir: Vector2, damage: int) -> void:
 	var bullet := BulletScene.instantiate()
 	add_child(bullet)
-	bullet.init(pos, dir)
+	bullet.init(pos, dir, damage)
+
+func _on_upgrade_button_pressed() -> void:
+	_upgrade_menu.setup(_player)
+	_upgrade_menu.show()
 
 func _on_spawn_timer_timeout() -> void:
 	if _asteroid_count < MAX_ASTEROIDS:
@@ -88,6 +95,7 @@ func _on_cargo_changed(current: int, maximum: int) -> void:
 	_cargo_label.text = "Cargo: %d/%d" % [current, maximum]
 
 func _on_fuel_changed(current: float, maximum: float) -> void:
+	_fuel_bar.max_value = maximum
 	_fuel_bar.value = current
 
 func _random_edge_position() -> Vector2:
