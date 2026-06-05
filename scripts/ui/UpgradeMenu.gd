@@ -35,6 +35,7 @@ const UPGRADES: Array = [
 @onready var _resource_label: Label = %ResourceLabel
 @onready var _close_button: Button = %CloseButton
 @onready var _upgrades_container: VBoxContainer = %UpgradesContainer
+@onready var _save_button: Button = %SaveButton
 
 var _player: CharacterBody2D = null
 var _level_labels: Array = []
@@ -49,10 +50,15 @@ func setup(player: CharacterBody2D) -> void:
 
 func _ready() -> void:
 	_close_button.pressed.connect(_on_close_pressed)
+	_save_button.pressed.connect(_on_save_pressed)
 
 func _on_close_pressed() -> void:
 	closed.emit()
 	hide()
+
+func _on_save_pressed() -> void:
+	if _player != null:
+		SaveManager.save_game(_player)
 
 ## Builds one row per upgrade inside _upgrades_container (called once after setup).
 func _build_rows() -> void:
