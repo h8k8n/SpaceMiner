@@ -8,7 +8,7 @@ const MAX_ASTEROIDS: int = 8
 ## Number of large asteroids placed at game start.
 const INITIAL_ASTEROIDS: int = 3
 
-@onready var _player: CharacterBody2D = $PlayerShip
+@onready var _player := $PlayerShip
 @onready var _joystick: Control = $HUD/VirtualJoystick
 @onready var _fire_button: Button = $HUD/FireButton
 @onready var _spawn_timer: Timer = $SpawnTimer
@@ -16,15 +16,16 @@ const INITIAL_ASTEROIDS: int = 3
 var _asteroid_count: int = 0
 
 func _ready() -> void:
+	randomize()
 	_joystick.moved.connect(_player.set_joystick_input)
 	_player.fired.connect(_on_player_fired)
 	_fire_button.pressed.connect(_player.fire)
 	_spawn_timer.timeout.connect(_on_spawn_timer_timeout)
-	for i in INITIAL_ASTEROIDS:
+	for i in range(INITIAL_ASTEROIDS):
 		_spawn_asteroid(0)
 
 func _on_player_fired(pos: Vector2, dir: Vector2) -> void:
-	var bullet: Area2D = BulletScene.instantiate()
+	var bullet := BulletScene.instantiate()
 	add_child(bullet)
 	bullet.init(pos, dir)
 
@@ -34,7 +35,7 @@ func _on_spawn_timer_timeout() -> void:
 
 func _spawn_asteroid(size: int) -> void:
 	var spawn_pos := _random_edge_position()
-	var asteroid: Area2D = AsteroidScene.instantiate()
+	var asteroid := AsteroidScene.instantiate()
 	asteroid.asteroid_size = size
 	add_child(asteroid)
 	asteroid.global_position = spawn_pos
@@ -43,7 +44,9 @@ func _spawn_asteroid(size: int) -> void:
 	_asteroid_count += 1
 
 func _spawn_fragment(spawn_pos: Vector2, size: int) -> void:
-	var asteroid: Area2D = AsteroidScene.instantiate()
+	if _asteroid_count >= MAX_ASTEROIDS:
+		return
+	var asteroid := AsteroidScene.instantiate()
 	asteroid.asteroid_size = size
 	add_child(asteroid)
 	var offset := Vector2(randf_range(-25.0, 25.0), randf_range(-25.0, 25.0))

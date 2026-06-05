@@ -34,7 +34,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 	if _fire_timer > 0.0:
-		_fire_timer -= delta
+		_fire_timer = max(0.0, _fire_timer - delta)
 	if Input.is_action_just_pressed("mine"):
 		fire()
 
