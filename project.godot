@@ -22,7 +22,8 @@ config/icon="res://icon.svg"
 [display]
 
 window/size/viewport_width=720
-window/size/viewport_height=1280
+window/size/viewport_height=900
+window/handheld/orientation=2
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
