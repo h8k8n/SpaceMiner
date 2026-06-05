@@ -9,6 +9,7 @@
 script = ExtResource("4_main_script")
 
 [node name="Base" parent="." instance=ExtResource("1_base")]
+position = Vector2(360, 1150)
 
 [node name="PlayerShip" parent="." instance=ExtResource("2_playership")]
 position = Vector2(360, 640)
@@ -43,3 +44,13 @@ offset_right = -10.0
 offset_bottom = 40.0
 text = "Cargo: 0/10"
 horizontal_alignment = 2
+
+[node name="FuelBar" type="ProgressBar" parent="HUD"]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 210.0
+offset_bottom = 35.0
+min_value = 0.0
+max_value = 100.0
+value = 100.0
+show_percentage = false
